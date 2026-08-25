@@ -21,14 +21,17 @@ import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
 const router = useRouter()
-const tags = ref([{ path: '/dashboard', title: '数据看板' }])
 
 function firstTitle() {
   const store = JSON.parse(localStorage.getItem('user') || 'null')
-  return store && (store.role === 'admin' || store.role === 'hr')
+  return store && store.role === 'hr'
     ? { path: '/dashboard', title: '数据看板' }
-    : { path: '/my-dashboard', title: '我的工作台' }
+    : (store && store.role === 'admin'
+      ? { path: '/users', title: '用户管理' }
+      : { path: '/my-dashboard', title: '我的工作台' })
 }
+
+const tags = ref([firstTitle()])
 
 watch(
   () => route.path,

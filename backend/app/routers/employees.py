@@ -5,12 +5,12 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
-from ..auth import require_hr_admin
+from ..auth import require_hr
 from ..database import get_db
 from ..models import Department, Employee, Position
 from ..schemas import EmployeeIn, EmployeeOut, EmployeeUpdate
 
-router = APIRouter(prefix="/employees", tags=["员工管理"], dependencies=[Depends(require_hr_admin)])
+router = APIRouter(prefix="/employees", tags=["员工管理"], dependencies=[Depends(require_hr)])
 
 EXPORT_HEADERS = ["工号", "姓名", "性别", "手机号", "邮箱", "部门", "职位", "入职日期", "状态"]
 

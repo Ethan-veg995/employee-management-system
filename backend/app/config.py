@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -6,7 +7,7 @@ DATA_DIR.mkdir(exist_ok=True)
 DB_PATH = DATA_DIR / "ems.db"
 
 # 演示项目密钥，正式环境应通过环境变量注入
-SECRET_KEY = "ems-demo-secret-key-2026"
+SECRET_KEY = os.getenv("EMS_SECRET_KEY", "ems-demo-secret-key-2026")
 ALGORITHM = "HS256"
 TOKEN_EXPIRE_HOURS = 12
 

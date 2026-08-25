@@ -23,10 +23,7 @@ export const allEmployees = () => request.get('/employees/all')
 export const createEmployee = (data) => request.post('/employees', data)
 export const updateEmployee = (id, data) => request.put(`/employees/${id}`, data)
 export const deleteEmployee = (id) => request.delete(`/employees/${id}`)
-export const exportEmployeesUrl = (params) => {
-  const q = new URLSearchParams(params || {}).toString()
-  return `/api/v1/employees/export/excel${q ? `?${q}` : ''}`
-}
+export const exportEmployees = (params) => request.get('/employees/export/excel', { params, responseType: 'blob' })
 export const importEmployees = (file) => {
   const form = new FormData()
   form.append('file', file)

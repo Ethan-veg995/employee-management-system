@@ -61,7 +61,7 @@ async function onLogin() {
     const data = await loginApi(form)
     store.setLogin(data.token, data.user)
     ElMessage.success('登录成功')
-    router.push(data.user.role === 'admin' || data.user.role === 'hr' ? '/dashboard' : '/my-dashboard')
+    router.push(data.user.role === 'admin' ? '/users' : (data.user.role === 'hr' ? '/dashboard' : '/my-dashboard'))
   } finally {
     loading.value = false
   }

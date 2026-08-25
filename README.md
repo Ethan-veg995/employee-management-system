@@ -31,7 +31,7 @@ npm run dev
 
 | 账号 | 密码 | 角色 |
 | --- | --- | --- |
-| admin | admin123 | 系统管理员 |
+| admin | admin123 | 系统管理员（用户管理） |
 | hr | hr123 | HR |
 | manager | manager123 | 部门主管 |
 | employee | employee123 | 普通员工 |

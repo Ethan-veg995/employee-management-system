@@ -3,7 +3,7 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from ..auth import require_hr_admin, require_login
+from ..auth import require_hr, require_login
 from ..config import LEAVE_TYPES, REQUEST_TYPES
 from ..database import get_db
 from ..models import ApprovalRequest, Employee, User
@@ -121,6 +121,8 @@ def my_approvals(status: str = "", request_type: str = "",
 
 @router.get("/pending")
 def pending_approvals(user=Depends(require_login), db: Session = Depends(get_db)):
+    if user.role not in ("manager", "hr"):
+        raise HTTPException(status_code=403, detail="没有权限查看待审批列表")
     q = db.query(ApprovalRequest).filter(ApprovalRequest.status == "待审批")
     if user.role == "manager":
         emp = require_employee_link(user)
@@ -131,7 +133,7 @@ def pending_approvals(user=Depends(require_login), db: Session = Depends(get_db)
 
 @router.get("")
 def all_approvals(status: str = "", request_type: str = "", department_id: int | None = None,
-                  user=Depends(require_hr_admin), db: Session = Depends(get_db)):
+                  user=Depends(require_hr), db: Session = Depends(get_db)):
     q = db.query(ApprovalRequest)
     if status:
         q = q.filter(ApprovalRequest.status == status)
@@ -148,13 +150,21 @@ def get_approval(req_id: int, user=Depends(require_login), db: Session = Depends
     req = db.get(ApprovalRequest, req_id)
     if not req:
         raise HTTPException(status_code=404, detail="申请不存在")
+    if user.role == "employee":
+        if not user.employee_id or req.employee_id != user.employee_id:
+            raise HTTPException(status_code=403, detail="没有权限查看该申请")
+    elif user.role == "manager":
+        if not user.employee_id or req.employee.department_id != user.employee.department_id:
+            raise HTTPException(status_code=403, detail="只能查看本部门员工的申请")
+    elif user.role == "admin":
+        raise HTTPException(status_code=403, detail="没有权限查看该申请")
     return approval_out(req)
 
 
 @router.post("/{req_id}/approve", response_model=ApprovalOut)
 def approve_request(req_id: int, body: ApproveIn,
                     user=Depends(require_login), db: Session = Depends(get_db)):
-    if user.role not in ("manager", "hr", "admin"):
+    if user.role not in ("manager", "hr"):
         raise HTTPException(status_code=403, detail="没有权限审批")
     if body.action not in ("通过", "驳回"):
         raise HTTPException(status_code=400, detail="action 仅支持 通过/驳回")

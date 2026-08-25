@@ -64,11 +64,11 @@ def require_roles(*allowed: str):
     return checker
 
 
-def require_admin(user: User = Depends(require_roles("admin"))) -> User:
+def require_hr(user: User = Depends(require_roles("hr"))) -> User:
     return user
 
 
-def require_hr_admin(user: User = Depends(require_roles("hr", "admin"))) -> User:
+def require_admin(user: User = Depends(require_roles("admin"))) -> User:
     return user
 
 

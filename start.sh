@@ -27,18 +27,15 @@ echo -e "${YELLOW}[1/4] 安装后端依赖...${NC}"
 cd "$BACKEND_DIR"
 pip install -r requirements.txt -q 2>/dev/null || pip install -r requirements.txt
 
-echo -e "${YELLOW}[2/4] 启动后端服务 (端口 8000)...${NC}"
+echo -e "${YELLOW}[2/4] 初始化演示数据...${NC}"
 cd "$BACKEND_DIR"
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload &
+python -m app.seed
+
+echo -e "${YELLOW}[2.5/4] 启动后端服务 (端口 8000)...${NC}"
+cd "$BACKEND_DIR"
+uvicorn app.main:app --host 0.0.0.0 --port 8000 &
 BACKEND_PID=$!
 echo -e "${GREEN}  后端 PID: $BACKEND_PID${NC}"
-
-# 等待后端就绪
-sleep 2
-# --------------- 种子数据 ---------------
-echo -e "${YELLOW}[2.5/4] 初始化演示数据...${NC}"
-cd "$BACKEND_DIR"
-python seed.py
 
 # --------------- 前端 ---------------
 echo -e "${YELLOW}[3/4] 安装前端依赖...${NC}"

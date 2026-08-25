@@ -4,7 +4,7 @@ from datetime import date, datetime
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from ..auth import require_hr_admin, require_login
+from ..auth import require_hr, require_login
 from ..database import get_db
 from ..models import ApprovalRequest, AttendanceRecord, AttendanceRule, Employee
 from ..schemas import AttendanceOut, AttendanceRuleIn, AttendanceRuleOut, PunchIn
@@ -42,12 +42,12 @@ def compute_status(rule: AttendanceRule, check_in: str, check_out: str | None) -
 
 
 @router.get("/rules", response_model=AttendanceRuleOut)
-def get_rules(user=Depends(require_hr_admin), db: Session = Depends(get_db)):
+def get_rules(user=Depends(require_hr), db: Session = Depends(get_db)):
     return get_rule(db)
 
 
 @router.put("/rules", response_model=AttendanceRuleOut)
-def update_rules(body: AttendanceRuleIn, user=Depends(require_hr_admin), db: Session = Depends(get_db)):
+def update_rules(body: AttendanceRuleIn, user=Depends(require_hr), db: Session = Depends(get_db)):
     rule = get_rule(db)
     rule.work_start = body.work_start
     rule.work_end = body.work_end
@@ -108,6 +108,8 @@ def month_range(month_str: str) -> tuple[int, int]:
         y, m = month_str.split("-")
         y, m = int(y), int(m)
     except Exception:
+        raise HTTPException(status_code=400, detail="月份格式应为 YYYY-MM")
+    if not (1 <= m <= 12):
         raise HTTPException(status_code=400, detail="月份格式应为 YYYY-MM")
     return y, m
 
@@ -172,7 +174,7 @@ def my_attendance(month: str = "", user=Depends(require_login), db: Session = De
 @router.get("/records")
 def attendance_records(month: str = "", department_id: int | None = None,
                        employee_id: int | None = None,
-                       user=Depends(require_hr_admin), db: Session = Depends(get_db)):
+                       user=Depends(require_hr), db: Session = Depends(get_db)):
     y, m = month_range(month or datetime.now().strftime("%Y-%m"))
     start, end = date(y, m, 1), date(y, m, calendar.monthrange(y, m)[1])
     q = db.query(AttendanceRecord).filter(AttendanceRecord.date >= start,
@@ -190,7 +192,7 @@ def attendance_records(month: str = "", department_id: int | None = None,
 
 @router.get("/monthly")
 def monthly_stats(month: str = "", department_id: int | None = None,
-                  user=Depends(require_hr_admin), db: Session = Depends(get_db)):
+                  user=Depends(require_hr), db: Session = Depends(get_db)):
     y, m = month_range(month or datetime.now().strftime("%Y-%m"))
     q = db.query(Employee).filter(Employee.status == "在职")
     if department_id:

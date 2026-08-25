@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from ..auth import require_hr_admin, require_login
+from ..auth import require_hr, require_login
 from ..config import PERF_COEFF, PERF_BONUS_RATE, PERF_LEVELS
 from ..database import get_db
 from ..models import Employee, PerformanceReview, Salary, User
@@ -65,7 +65,7 @@ def my_performance(user=Depends(require_login), db: Session = Depends(get_db)):
 
 @router.get("/suggest")
 def suggest_bonus(employee_id: int, year: int, month: int,
-                  user=Depends(require_hr_admin), db: Session = Depends(get_db)):
+                  user=Depends(require_hr), db: Session = Depends(get_db)):
     """绩效→薪资联动：返回当月绩效等级/系数与建议绩效奖金"""
     emp = db.get(Employee, employee_id)
     if not emp:
@@ -91,7 +91,7 @@ def suggest_bonus(employee_id: int, year: int, month: int,
 @router.post("", response_model=PerformanceOut)
 def create_performance(body: PerformanceIn, user=Depends(require_login),
                        db: Session = Depends(get_db)):
-    if user.role == "employee":
+    if user.role not in ("manager", "hr"):
         raise HTTPException(status_code=403, detail="没有权限进行绩效评分")
     emp = db.get(Employee, body.employee_id)
     if not emp:
@@ -121,7 +121,7 @@ def create_performance(body: PerformanceIn, user=Depends(require_login),
 
 @router.put("/{perf_id}", response_model=PerformanceOut)
 def update_performance(perf_id: int, body: PerformanceIn,
-                       user=Depends(require_hr_admin), db: Session = Depends(get_db)):
+                       user=Depends(require_hr), db: Session = Depends(get_db)):
     perf = db.get(PerformanceReview, perf_id)
     if not perf:
         raise HTTPException(status_code=404, detail="绩效记录不存在")
@@ -136,7 +136,7 @@ def update_performance(perf_id: int, body: PerformanceIn,
 
 
 @router.delete("/{perf_id}")
-def delete_performance(perf_id: int, user=Depends(require_hr_admin),
+def delete_performance(perf_id: int, user=Depends(require_hr),
                        db: Session = Depends(get_db)):
     perf = db.get(PerformanceReview, perf_id)
     if not perf:

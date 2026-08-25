@@ -5,7 +5,7 @@ from datetime import date, datetime
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from ..auth import require_hr_admin, require_login
+from ..auth import require_hr, require_login
 from ..database import get_db
 from ..models import (ApprovalRequest, AttendanceRecord, Department,
                       Employee, Position, Salary)
@@ -54,10 +54,10 @@ def overall_rate(db: Session, start: date, end: date, dept_id: int | None = None
 
 
 @router.get("/summary", response_model=DashboardSummary)
-def summary(user=Depends(require_hr_admin), db: Session = Depends(get_db)):
+def summary(user=Depends(require_hr), db: Session = Depends(get_db)):
     now = datetime.now()
     cur_start, cur_end = month_bounds(0)
-    last_start, last_end = month_bounds(-1)
+    last_start, last_end = month_bounds(1)
 
     employees = db.query(Employee).all()
     active = [e for e in employees if e.status == "在职"]

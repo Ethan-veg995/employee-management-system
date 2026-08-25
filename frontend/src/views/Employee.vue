@@ -122,7 +122,7 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { Plus, Edit, Delete, Search, Upload, Download } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { listEmployees, listDepartments, listPositions, createEmployee, updateEmployee,
-         deleteEmployee, exportEmployeesUrl, importEmployees } from '../api'
+         deleteEmployee, exportEmployees, importEmployees } from '../api'
 
 const list = ref([])
 const total = ref(0)
@@ -195,8 +195,14 @@ async function onDelete(row) {
   load()
 }
 
-function onExport() {
-  window.open(exportEmployeesUrl(query), '_blank')
+async function onExport() {
+  const blob = await exportEmployees(query)
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'employees_export.xlsx'
+  a.click()
+  URL.revokeObjectURL(url)
 }
 
 async function onImport({ file }) {

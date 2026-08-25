@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from ..auth import require_hr_admin, require_login
+from ..auth import require_hr, require_login
 from ..database import get_db
 from ..models import Employee, Salary
 from ..schemas import SalaryIn, SalaryOut
@@ -26,7 +26,7 @@ def salary_out(s: Salary) -> SalaryOut:
 
 
 @router.get("/years")
-def salary_years(user=Depends(require_hr_admin), db: Session = Depends(get_db)):
+def salary_years(user=Depends(require_hr), db: Session = Depends(get_db)):
     rows = db.query(Salary.year).distinct().order_by(Salary.year.desc()).all()
     return [r[0] for r in rows]
 
@@ -34,7 +34,7 @@ def salary_years(user=Depends(require_hr_admin), db: Session = Depends(get_db)):
 @router.get("")
 def list_salaries(year: int | None = None, month: int | None = None,
                   employee_id: int | None = None, department_id: int | None = None,
-                  user=Depends(require_hr_admin), db: Session = Depends(get_db)):
+                  user=Depends(require_hr), db: Session = Depends(get_db)):
     q = db.query(Salary)
     if year:
         q = q.filter(Salary.year == year)
@@ -58,7 +58,7 @@ def my_salaries(user=Depends(require_login), db: Session = Depends(get_db)):
 
 
 @router.post("", response_model=SalaryOut)
-def create_salary(body: SalaryIn, user=Depends(require_hr_admin), db: Session = Depends(get_db)):
+def create_salary(body: SalaryIn, user=Depends(require_hr), db: Session = Depends(get_db)):
     if not db.get(Employee, body.employee_id):
         raise HTTPException(status_code=400, detail="员工不存在")
     existing = (db.query(Salary)
@@ -77,7 +77,7 @@ def create_salary(body: SalaryIn, user=Depends(require_hr_admin), db: Session = 
 
 
 @router.put("/{salary_id}", response_model=SalaryOut)
-def update_salary(salary_id: int, body: SalaryIn, user=Depends(require_hr_admin),
+def update_salary(salary_id: int, body: SalaryIn, user=Depends(require_hr),
                   db: Session = Depends(get_db)):
     s = db.get(Salary, salary_id)
     if not s:
@@ -101,7 +101,7 @@ def update_salary(salary_id: int, body: SalaryIn, user=Depends(require_hr_admin)
 
 
 @router.delete("/{salary_id}")
-def delete_salary(salary_id: int, user=Depends(require_hr_admin), db: Session = Depends(get_db)):
+def delete_salary(salary_id: int, user=Depends(require_hr), db: Session = Depends(get_db)):
     s = db.get(Salary, salary_id)
     if not s:
         raise HTTPException(status_code=404, detail="薪资记录不存在")

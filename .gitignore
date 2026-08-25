@@ -8,6 +8,9 @@ backend/.venv/
 node_modules/
 frontend/dist/
 
+# 环境变量（防敏感配置外泄）
+.env
+
 # IDE / 本地配置
 .vscode/
 .idea/
@@ -26,3 +29,6 @@ Thumbs.db
 # 实习报告（不推送）
 ppt/实习证明考核报告*
 tools/make_report_ppt.py
+
+# 记账数据库备份（不入库）
+backups/

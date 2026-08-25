@@ -4,14 +4,14 @@ from datetime import date, datetime
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from ..auth import require_hr_admin
+from ..auth import require_hr
 from ..config import LEAVE_QUOTA, ATTENDANCE_WARN_RATE
 from ..database import get_db
 from ..models import ApprovalRequest, AttendanceRecord, Department, Employee
 from ..routers.attendance import employee_month_stats
 from ..schemas import AlertItem
 
-router = APIRouter(prefix="/alerts", tags=["智能提醒"], dependencies=[Depends(require_hr_admin)])
+router = APIRouter(prefix="/alerts", tags=["智能提醒"], dependencies=[Depends(require_hr)])
 
 
 @router.get("", response_model=list[AlertItem])

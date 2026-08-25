@@ -23,7 +23,7 @@
             <el-button type="primary" size="large" @click="$router.push('/attendance/punch')">
               <el-icon style="margin-right:6px"><AlarmClock /></el-icon>去打卡
             </el-button>
-            <el-button type="success" size="large" @click="$router.push('/leave/apply')">
+            <el-button type="success" size="large" @click="$router.push('/approval/apply')">
               <el-icon style="margin-right:6px"><EditPen /></el-icon>申请请假
             </el-button>
             <el-button size="large" @click="$router.push('/salary/my')">

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from ..auth import require_hr_admin, require_login
+from ..auth import require_hr, require_login
 from ..database import get_db
 from ..models import Announcement
 from ..routers.notifications import notify_all
@@ -23,7 +23,7 @@ def list_announcements(user=Depends(require_login), db: Session = Depends(get_db
 
 
 @router.post("", response_model=AnnouncementOut)
-def create_announcement(body: AnnouncementIn, user=Depends(require_hr_admin),
+def create_announcement(body: AnnouncementIn, user=Depends(require_hr),
                         db: Session = Depends(get_db)):
     if not body.title.strip():
         raise HTTPException(status_code=400, detail="公告标题不能为空")
@@ -38,7 +38,7 @@ def create_announcement(body: AnnouncementIn, user=Depends(require_hr_admin),
 
 @router.put("/{ann_id}", response_model=AnnouncementOut)
 def update_announcement(ann_id: int, body: AnnouncementIn,
-                        user=Depends(require_hr_admin), db: Session = Depends(get_db)):
+                        user=Depends(require_hr), db: Session = Depends(get_db)):
     ann = db.get(Announcement, ann_id)
     if not ann:
         raise HTTPException(status_code=404, detail="公告不存在")
@@ -52,7 +52,7 @@ def update_announcement(ann_id: int, body: AnnouncementIn,
 
 
 @router.delete("/{ann_id}")
-def delete_announcement(ann_id: int, user=Depends(require_hr_admin),
+def delete_announcement(ann_id: int, user=Depends(require_hr),
                         db: Session = Depends(get_db)):
     ann = db.get(Announcement, ann_id)
     if not ann:

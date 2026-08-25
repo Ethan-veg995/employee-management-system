@@ -65,7 +65,7 @@ import { listAnnouncements, createAnnouncement, updateAnnouncement, deleteAnnoun
 import { useUserStore } from '../store/user'
 
 const store = useUserStore()
-const canManage = computed(() => ['hr', 'admin'].includes(store.user?.role))
+const canManage = computed(() => ['hr'].includes(store.user?.role))
 const list = ref([])
 const loading = ref(false)
 const publishing = ref(false)

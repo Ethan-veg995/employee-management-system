@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from ..auth import require_hr_admin
+from ..auth import require_hr
 from ..database import get_db
 from ..models import Department, Employee, Position
 from ..schemas import DepartmentIn, DepartmentOut
 
-router = APIRouter(prefix="/departments", tags=["部门管理"], dependencies=[Depends(require_hr_admin)])
+router = APIRouter(prefix="/departments", tags=["部门管理"], dependencies=[Depends(require_hr)])
 
 
 def dept_out(db: Session, dept: Department) -> DepartmentOut:

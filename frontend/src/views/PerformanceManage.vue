@@ -48,7 +48,7 @@
       <el-form :model="form" :rules="rules" ref="formRef" label-width="90px">
         <el-form-item label="员工" prop="employee_id">
           <el-select v-model="form.employee_id" filterable style="width:100%" :disabled="!!form.id" @change="onEmpChange">
-            <el-option v-for="e in scoreTargets" :key="e.id"
+            <el-option v-for="e in targets" :key="e.id"
                        :label="`${e.name} (${e.employee_no})`" :value="e.id" />
           </el-select>
         </el-form-item>
@@ -94,7 +94,7 @@ import { listPerformance, listDepartments, allEmployees, createPerformance,
 import { useUserStore } from '../store/user'
 
 const store = useUserStore()
-const isHr = computed(() => ['hr', 'admin'].includes(store.user?.role))
+const isHr = computed(() => ['hr'].includes(store.user?.role))
 const list = ref([])
 const departments = ref([])
 const targets = ref([])
@@ -126,9 +126,6 @@ function coeffOf(score) {
 function levelType(l) {
   return { S: 'danger', A: 'warning', B: 'primary', C: 'info' }[l] || 'info'
 }
-
-// 可评分员工（主管跨部门评分会被后端拦截并提示）
-const scoreTargets = targets
 
 async function load() {
   loading.value = true

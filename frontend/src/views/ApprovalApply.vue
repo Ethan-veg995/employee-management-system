@@ -22,10 +22,10 @@
             <span style="margin-left:10px;color:#909399;font-size:12px">元（报销单需保留发票）</span>
           </el-form-item>
           <el-form-item v-if="needDates" label="开始日期" prop="start_date">
-            <el-date-picker v-model="form.start_date" type="date" value-format="YYYY-MM-DD" style="width:100%" @change="calcDays" />
+            <el-date-picker v-model="form.start_date" type="date" value-format="YYYY-MM-DD" style="width:100%" />
           </el-form-item>
           <el-form-item v-if="needDates" label="结束日期" prop="end_date">
-            <el-date-picker v-model="form.end_date" type="date" value-format="YYYY-MM-DD" style="width:100%" @change="calcDays" />
+            <el-date-picker v-model="form.end_date" type="date" value-format="YYYY-MM-DD" style="width:100%" />
           </el-form-item>
           <el-form-item v-if="needDates" label="天数">
             <el-tag type="info" size="large">{{ days }} 天</el-tag>
@@ -100,8 +100,6 @@ function onTypeChange() {
   form.reason = ''
   formRef.value?.clearValidate()
 }
-
-function calcDays() {}
 
 async function onSubmit() {
   await formRef.value.validate()
