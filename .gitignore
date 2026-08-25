@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+backend/data/*.db
+backend/.venv/
+
+# Node
+node_modules/
+frontend/dist/
+
+# IDE / 本地配置
+.vscode/
+.idea/
+.claude/
+
+# 课程模板（不公开）
+实习证明考核条件一：报告要求及相关注意事项.pdf
+
+# 系统
+Thumbs.db
+.DS_Store
+
+# Office 临时文件
+~$*
+
+# 实习报告（不推送）
+ppt/实习证明考核报告*
+tools/make_report_ppt.py
